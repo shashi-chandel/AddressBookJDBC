@@ -23,7 +23,7 @@ public class Contact {
 		this.email = email;
 		this.addressBookType = addressBookType;
 	}
-
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

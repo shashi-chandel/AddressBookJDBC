@@ -1,10 +1,12 @@
 package com.capgemini.addressbookjdbc;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,6 +93,13 @@ public class AddressBookDBService {
 			e.printStackTrace();
 		}
 		return contactList;
+	}
+	
+	public List<Contact> getContactForGivenDateRange(LocalDate startDate, LocalDate endDate) {
+		String sql = String.format(
+				"SELECT a.first_name,a.last_name,a.address,a.city,a.state,a.zip,a.phone,a.email,a.type from address_book a left join user_details u on a.last_name=u.last_name WHERE u.date_added BETWEEN '%s' AND '%s'; ",
+				Date.valueOf(startDate), Date.valueOf(endDate));
+		return this.getContactDetailsUsingSqlQuery(sql);
 	}
 
 	private void prepareStatementForContactData() {
