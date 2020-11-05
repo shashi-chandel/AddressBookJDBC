@@ -1,6 +1,7 @@
 package com.capgemini.addressbookjdbc;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,6 +9,10 @@ public class AddressBookService {
 	private List<Contact> contactList;
 	private AddressBookDBService addressBookDBService;
 	private Map<String, Integer> contactByCityOrState;
+	
+	public enum IOService {
+		DB_IO
+	}
 	
 	public AddressBookService(List<Contact> contactList) {
 		this();
@@ -20,6 +25,16 @@ public class AddressBookService {
 
 	public List<Contact> readContactData() {
 		this.contactList = addressBookDBService.readData();
+		return contactList;
+	}
+	
+	public long countEntries(IOService ioService) {
+		return contactList.size();
+	}
+
+	public List<Contact> readData(IOService ioService) {
+		if (ioService.equals(IOService.DB_IO))
+			this.contactList = addressBookDBService.readData();
 		return contactList;
 	}
 	
@@ -54,6 +69,48 @@ public class AddressBookService {
 			int zip, String phone, String email, String type) {
 		contactList.add(addressBookDBService.addContact(firstName, lastName, address, city, state, zip, phone, email, type));
 
+	}
+	
+	public void addContactToDB(String firstName, String lastName, String address, String city, String state, int zip,
+			String phone, String email, String addressBookType) {
+		contactList.add(addressBookDBService.addContact(firstName, lastName, address, city, state, zip, phone, email,
+				addressBookType));
+
+	}
+
+	public void addContact(List<Contact> contactDataList) {
+		contactDataList.forEach(contactData -> {
+			System.out.println("Employee being added : " + contactData.firstName);
+			this.addContactToDB(contactData.firstName, contactData.lastName, contactData.address, contactData.city,
+					contactData.state, contactData.zip, contactData.phoneNumber, contactData.email,
+					contactData.addressBookType);
+			System.out.println("Employee added : " + contactData.firstName);
+		});
+		System.out.println("" + this.contactList);
+	}
+
+	public void addEmployeeToPayrollWithThreads(List<Contact> contactDataList) {
+		Map<Integer, Boolean> employeeAdditionStatus = new HashMap<>();
+		contactDataList.forEach(contactData -> {
+			Runnable task = () -> {
+				employeeAdditionStatus.put(contactData.hashCode(), false);
+				System.out.println("Employee being added : " + Thread.currentThread().getName());
+				this.addContactToDB(contactData.firstName, contactData.lastName, contactData.address, contactData.city,
+						contactData.state, contactData.zip, contactData.phoneNumber, contactData.email,
+						contactData.addressBookType);
+				employeeAdditionStatus.put(contactData.hashCode(), true);
+				System.out.println("Employee added : " + Thread.currentThread().getName());
+			};
+			Thread thread = new Thread(task, contactData.firstName);
+			thread.start();
+		});
+		while (employeeAdditionStatus.containsValue(false)) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+			}
+		}
+		System.out.println("" + this.contactList);
 	}
 
 }

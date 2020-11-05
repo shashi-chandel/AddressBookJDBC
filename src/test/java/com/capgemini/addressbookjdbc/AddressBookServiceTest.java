@@ -1,18 +1,23 @@
 package com.capgemini.addressbookjdbc;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.capgemini.addressbookjdbc.AddressBookService.IOService;
+
 public class AddressBookServiceTest {
 	@Test
 	public void contactsWhenRetrievedFromDB_ShouldMatchCount() {
 		AddressBookService addressBookService = new AddressBookService();
 		List<Contact> contactList = addressBookService.readContactData();
-		Assert.assertEquals(11, contactList.size());
+		Assert.assertEquals(17, contactList.size());
 	}
 
 	@Test
@@ -39,7 +44,7 @@ public class AddressBookServiceTest {
 		AddressBookService addressBookService = new AddressBookService();
 		addressBookService.readContactData();
 		Map<String, Integer> contactByCityOrStateMap = addressBookService.readContactByCityOrState();
-		Assert.assertEquals(true, contactByCityOrStateMap.get("California").equals(10));
+		Assert.assertEquals(true, contactByCityOrStateMap.get("California").equals(12));
 	}
 
 	@Test
@@ -51,5 +56,25 @@ public class AddressBookServiceTest {
 				"9908487454", "eric01@gmail.com", "Family");
 		boolean result = addressBookService.checkContactInSyncWithDB("Eric");
 		Assert.assertTrue(result);
+	}
+	
+	@Test
+	public void givenContacts_WhenAddedToDB_ShouldMatchEmployeeEntries() {
+		Contact[] arrayOfEmployee = {
+				new Contact("Ayan", "Mallik", "Street 6", "Pune", "Maharashtra", 507012, "9865430031",
+						"malikayan@gmail.com", "Casual"),
+				new Contact("Shreya", "Ghoshal", "Street 7", "Mumbai", "Maharashtra", 580012, "9865854331",
+						"ghoshalshreya@gmail.com", "Casual")};
+		AddressBookService addressBookService = new AddressBookService();
+		addressBookService.readData(IOService.DB_IO);
+		Instant start = Instant.now();
+		addressBookService.addContact(Arrays.asList(arrayOfEmployee));
+		Instant end = Instant.now();
+		System.out.println("Duration without thread : " + Duration.between(start, end));
+		Instant threadStart = Instant.now();
+		addressBookService.addEmployeeToPayrollWithThreads(Arrays.asList(arrayOfEmployee));
+		Instant threadEnd = Instant.now();
+		System.out.println("Duartion with Thread : " + Duration.between(threadStart, threadEnd));
+		Assert.assertEquals(20, addressBookService.countEntries(IOService.DB_IO));
 	}
 }
