@@ -12,7 +12,7 @@ public class AddressBookServiceTest {
 	public void contactsWhenRetrievedFromDB_ShouldMatchCount() {
 		AddressBookService addressBookService = new AddressBookService();
 		List<Contact> contactList = addressBookService.readContactData();
-		Assert.assertEquals(7, contactList.size());
+		Assert.assertEquals(11, contactList.size());
 	}
 
 	@Test
@@ -23,7 +23,7 @@ public class AddressBookServiceTest {
 		boolean result = addressBookService.checkContactInSyncWithDB("Sam");
 		Assert.assertTrue(result);
 	}
-	
+
 	@Test
 	public void givenDateRange_WhenRetrieved_ShouldMatchEmployeeCount() {
 		AddressBookService addressBookService = new AddressBookService();
@@ -33,12 +33,23 @@ public class AddressBookServiceTest {
 		List<Contact> contactList = addressBookService.readContactDataForGivenDateRange(startDate, endDate);
 		Assert.assertEquals(5, contactList.size());
 	}
-	
+
 	@Test
 	public void givenContacts_RetrieveNumberOfContacts_ByCityOrState() {
 		AddressBookService addressBookService = new AddressBookService();
 		addressBookService.readContactData();
 		Map<String, Integer> contactByCityOrStateMap = addressBookService.readContactByCityOrState();
-		Assert.assertEquals(true, contactByCityOrStateMap.get("California").equals(5));
+		Assert.assertEquals(true, contactByCityOrStateMap.get("California").equals(10));
+	}
+
+	@Test
+	public void givenNewContact_WhenAdded_ShouldSyncWithDB() {
+		AddressBookService addressBookService = new AddressBookService();
+		addressBookService.readContactData();
+		LocalDate date = LocalDate.of(2020, 02, 20);
+		addressBookService.addContactToDatabase("Eric", "Hector", "Galaxy Mall", "San Diego", "California", 700012,
+				"9908487454", "eric01@gmail.com", "Family");
+		boolean result = addressBookService.checkContactInSyncWithDB("Eric");
+		Assert.assertTrue(result);
 	}
 }

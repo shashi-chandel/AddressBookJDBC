@@ -50,6 +50,10 @@ public class AddressBookService {
 		this.contactByCityOrState=addressBookDBService.getContactsByCityOrState();
 		return contactByCityOrState;
 	}
+	public void addContactToDatabase(String firstName, String lastName, String address, String city, String state,
+			int zip, String phone, String email, String type) {
+		contactList.add(addressBookDBService.addContact(firstName, lastName, address, city, state, zip, phone, email, type));
 
+	}
 
 }
