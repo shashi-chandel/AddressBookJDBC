@@ -1,6 +1,7 @@
 package com.capgemini.addressbookjdbc;
 
 public class Contact {
+	public int id;
 	public String firstName;
 	public String lastName;
 	public String address;
@@ -22,6 +23,13 @@ public class Contact {
 		this.phoneNumber = phoneNumber;
 		this.email = email;
 		this.addressBookType = addressBookType;
+	}
+	
+	public Contact(int id,String firstName, String lastName, String address, String city, String state, int zip,
+			String phoneNumber, String email, String addressBookType) {
+		this(firstName,lastName,address,city,state,zip,phoneNumber,email,addressBookType);
+		this.id=id;
+		
 	}
 	
 	@Override

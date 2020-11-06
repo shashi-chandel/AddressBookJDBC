@@ -36,8 +36,8 @@ public class AddressBookDBService {
 		List<Contact> ContactList = null;
 		try (Connection connection = addressBookDBService.getConnection();) {
 			PreparedStatement preparedStatement = connection.prepareStatement(sql);
-			ResultSet result = preparedStatement.executeQuery(sql);
-			ContactList = this.getAddressBookData(result);
+			ResultSet resultSet = preparedStatement.executeQuery(sql);
+			ContactList = this.getAddressBookData(resultSet);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

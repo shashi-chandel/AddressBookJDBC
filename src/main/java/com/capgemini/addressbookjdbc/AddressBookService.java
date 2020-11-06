@@ -1,6 +1,7 @@
 package com.capgemini.addressbookjdbc;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,12 +12,12 @@ public class AddressBookService {
 	private Map<String, Integer> contactByCityOrState;
 	
 	public enum IOService {
-		DB_IO
+		DB_IO,REST_IO
 	}
 	
 	public AddressBookService(List<Contact> contactList) {
 		this();
-		this.contactList = contactList;
+		this.contactList = new ArrayList<>(contactList);
 	}
 
 	public AddressBookService() {
@@ -75,6 +76,15 @@ public class AddressBookService {
 			String phone, String email, String addressBookType) {
 		contactList.add(addressBookDBService.addContact(firstName, lastName, address, city, state, zip, phone, email,
 				addressBookType));
+
+	}
+	
+	public void addContactToJSONServer(Contact contactData, IOService ioService) {
+		if (ioService.equals(IOService.DB_IO))
+			this.addContactToDB(contactData.firstName, contactData.lastName, contactData.address, contactData.city,
+					contactData.state, contactData.zip, contactData.phoneNumber, contactData.email,
+					contactData.addressBookType);
+		contactList.add(contactData);
 
 	}
 
